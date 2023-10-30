@@ -10,19 +10,19 @@ class Trip:
         self.destinations = Destinations(self)
 
     def add_connecting_flights(self):
-        if len(self.destinations) <= 1:
+        if len(self.destinations.destinations) <= 1:
             raise Exception('cannot add connecting flights (no destinations exist)')
 
         self.flights.clear()
         current_destination = None
         next_destination = None
 
-        for i in range(len(self.destinations)):
-            if i == (len(self.destinations) - 1):
+        for i in range(len(self.destinations.destinations)):
+            if i == (len(self.destinations.destinations) - 1):
                 return
 
-            current_destination = self.destinations[i]
-            next_destination = self.destinations[i + 1]
+            current_destination = self.destinations.destinations[i]
+            next_destination = self.destinations.destinations[i + 1]
 
             if current_destination == next_destination or current_destination.country == next_destination.country:
                 raise Exception('cannot add connecting flights (invalid destinations)')
@@ -30,15 +30,15 @@ class Trip:
             for f in self.agency.flights:
                 if f.takeoff == current_destination.country and f.landing == next_destination.country:
                     try:
-                        self.flights.add_flight(f)
+                        self.flights.flights.add_flight(f)
                     except Exception as ex:
                         raise Exception('error adding flight: ' + str(ex))
                     break
 
     def get_itinery(self):
         objects = []
-        for i in range(len(self.destinations)):
-            objects.append(self.destinations[i])
+        for i in range(len(self.destinations.destinations)):
+            objects.append(self.destinations.destinations[i])
             if i < len(self.flights):
-                objects.append(self.flights[i])
+                objects.append(self.flights.flights[i])
         return objects

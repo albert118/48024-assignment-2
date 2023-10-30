@@ -67,7 +67,7 @@ class AgencyMenu():
             icon_fn='trip_icon.png',
             menu_items={
                 # redirects to the existing destination add/remove forms
-                # TODO: check example video if trip/destination photo should show here... :/
+                # I assume the trip/destination photo should show on these windows too
                 'Add Destination': self.on_add_destination,
                 'Remove Destination': self.on_remove_destination,
                 # autogenerate the itinerary, this is then visible in 'View Trip'
@@ -120,7 +120,7 @@ class AgencyMenu():
                     form_data['Cost'].get()
                 ))
             except Exception as ex:
-                Error(self.main, ex)
+                Error(self.main.window, ex)
 
         self.main.child_menu.open_sub_menu(
             title='Add Flight',
@@ -149,7 +149,7 @@ class AgencyMenu():
                     f = self.agency.flights.get_flight(takeoff, landing)
                     self.agency.flights.remove_flight(f)
             except Exception as ex:
-                Error(self.main, ex)
+                Error(self.main.window, ex)
 
         self.main.child_menu.open_sub_menu(
             title='Remove Flight',
@@ -195,8 +195,7 @@ class AgencyMenu():
                     form_data['Country'].get()
                 ))
             except Exception as ex:
-                Error(self.main, ex)
-
+                Error(self.main.window, ex)
 
         self.main.child_menu.open_sub_menu(
             title='Add Destination',
@@ -221,11 +220,10 @@ class AgencyMenu():
             country = form_data['Country'].get()
             
             try:
-                if self.agency.has_destination(name, country):
-                    d = self.agency.get_destination(name, country)
-                    self.agency.destinations.remove_destination(d)
+                d = self.agency.destinations.get_destination(name, country)
+                self.agency.destinations.remove_destination(d)
             except Exception as ex:
-                Error(self.main, ex)
+                Error(self.main.window, ex)
 
         self.main.child_menu.open_sub_menu(
             title='Remove Destinations',
@@ -241,7 +239,7 @@ class AgencyMenu():
         try:
             self.agency.trip.add_connecting_flights()
         except Exception as ex:
-            Error(self.main, ex)
+            Error(self.main.window, ex)
 
     def on_view_trip(self):
         # TODO: determine the value clicked on, use it to switch the redirect
@@ -253,5 +251,5 @@ class AgencyMenu():
             menu_items={
                 'View Individual': lambda menu_choice: print(f'go to {menu_choice}'),
             },
-            table_data={ 'Itinery': self.trip.get_itinery() }
+            table_data={ 'columns': ['Itinery'], 'rows': self.agency.trip.get_itinery() }
         )

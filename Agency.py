@@ -18,10 +18,7 @@ class Agency:
         self.destinations = Destinations(self)
         self.destinations.insert_dummy_data()
 
-        try:
-            self.trip = Trip(self)
-        except Exception as ex:
-            print(ex)
+        self.trip = Trip(self)
 
     def is_logged_in(self) -> bool:
         return self.logged_in_user is not None

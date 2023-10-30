@@ -176,7 +176,9 @@ class LayoutBuilder:
         table = Treeview(
             table_frame,
             columns=table_data['columns'],
-            show='headings'
+            show='headings',
+            selectmode='browse',
+            height=10
         )
 
         if filters is not None:
@@ -220,7 +222,9 @@ class LayoutBuilder:
             table = Treeview(
                 view_frame,
                 columns=['list_view'],
-                show='tree'
+                show='tree',
+                selectmode='browse',
+                height=10
             )
 
             self.add_table_rows(table, list_data['data'])
@@ -270,5 +274,4 @@ class LayoutBuilder:
 
         for idx, row in enumerate(data):
             tags = ('evenrow',) if idx % 2 == 0 else ('oddrow',)
-            print(row)
             table.insert('', 'end', values=row, tags=tags, iid=idx)

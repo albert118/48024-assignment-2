@@ -25,12 +25,12 @@ def setup_styling():
     style.configure('TLabel', foreground=LIGHT_BLUE, font=FONT_LABEL)
 
     # TODO: rowheight should work here
-    style.configure('TreeView', background=LIGHT_BLUE, anchor="w", rowheight=40)
+    style.configure('TreeView', background=LIGHT_BLUE, anchor="w", rowheight=20)
     style.configure("Treeview.Heading", background=TABLE_GRAY, border=LIGHT_BLUE, foreground=LIGHT_BLUE, padding=6, font=FONT_LABEL)
     style.map('Treeview.Heading', background=[('active', TABLE_GRAY)]) # disable active header styling
 
     # TODO: fix the below to show borders (borders not appearing)
-    style.configure('Treeview.Cell', bordercolor='black', borderwidth=1, padding=(6, 3), font=("Arial", 8))
+    style.configure('Treeview.Cell', bordercolor='black', borderwidth=1, padding=(10, 5), rowheight=50, font=("Arial", 8))
 
     style.configure('ExceptionType.TLabel', foreground='red', font=FONT_LABEL)
     style.configure('ExceptionMessage.TLabel', foreground=LIGHT_BLUE, font=FONT_LABEL)

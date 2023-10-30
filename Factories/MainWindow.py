@@ -2,14 +2,17 @@ from tkinter import *
 from tkinter.ttk import *
 from Factories.MenuWindow import MenuWindow
 from Factories.LayoutBuilder import LayoutBuilder
+from Factories.AssetUtil import load_icon
 
 
 class MainWindow:
-    def __init__(self, menu_message: str, menu_items: dict,
+    def __init__(self, parent: Tk, menu_message: str, menu_items: dict,
                  title='Prog2 Travel Agency', icon_fn='agency_icon.png', 
                  image_fn='agency.png', geom="1600x700"):
         '''construct a new window with some common config'''
-        self.conf_window(title, icon_fn, geom)
+        print(f'{__name__}: created main window')
+
+        self.conf_window(parent, title, icon_fn, geom)
         self.child_menu = None
 
         # add the app's exit condition
@@ -24,11 +27,11 @@ class MainWindow:
             .add_menu(menu_items)
         )
 
-    def conf_window(self, title, icon_fn, geom):
-        self.window = Tk()
+    def conf_window(self, parent, title, icon_fn, geom):
+        self.window = Toplevel(parent)
         self._title = title
-        self.window.title(title)
-        # self.window.iconphoto(False, load_icon(icon_fn))
+        self.window.title(self._title)
+        self.window.iconphoto(False, load_icon(icon_fn))
         self.window.geometry(geom)
 
     def on_exit(self):

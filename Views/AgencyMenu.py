@@ -11,11 +11,12 @@ GEOM_TABLE_VIEW = "1600x1400"
 
 
 class AgencyMenu():
-    def __init__(self, agency: Agency):
+    def __init__(self, parent: Tk, agency: Agency):
         '''a simple high-level navigation menu for the agency app'''
         self.agency = agency
 
         self.main = MainWindow(
+            parent=parent,
             menu_message=f'Hi {self.agency.logged_in_user.name}, welcome to the Prog2 Travel Agency',
             menu_items={
                 'Explore Flights': self.on_flights,

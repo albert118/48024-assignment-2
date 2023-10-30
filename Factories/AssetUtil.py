@@ -24,3 +24,21 @@ def load_asset(image_fn: str, new_width: int) -> PhotoImage:
         raise
 
     return ImageTk.PhotoImage(resized_image)
+
+def load_icon(icon_fn: str) -> PhotoImage:
+    # png_path = "login_icon.png"
+    # gif_path = "login_icon.gif"
+
+    # try:
+    #     png_image = Image.open(png_path)
+    #     # resize the image to 32x32 (standard icon size)
+    #     png_image = png_image.resize((32, 32))
+    #     png_image.save(gif_path, format="GIF")
+    # except Exception as e:
+    #     print("Error converting icon:", str(e))
+
+    # icon = PhotoImage(file=gif_path)
+    # self.win.call('wm', 'iconphoto', self.win._w, icon)
+    
+    print(f'loading asset: {icon_fn}')
+    return PhotoImage(file=icon_fn)

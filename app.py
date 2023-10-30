@@ -11,7 +11,7 @@ class FlightsApp(tk.Tk):
 
         LoginForm(
             self,
-            redirect_win=lambda: AgencyMenu(self.agency),
+            redirect_win=lambda: AgencyMenu(self, self.agency),
             on_auth=self.agency.on_auth
         )
 

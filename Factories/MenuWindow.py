@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter.ttk import *
 from typing import Callable
 from Factories.LayoutBuilder import LayoutBuilder
+from Factories.AssetUtil import load_icon
 
 
 GEOM = "1600x700"
@@ -55,7 +56,7 @@ class MenuWindow():
         # place this new window on-top of the parent and wait on this window's outcome
         self.window.wm_transient(parent)
         self.window.title(title)
-        # self.window.iconphoto(False, load_icon(icon_fn))
+        self.window.iconphoto(False, load_icon(icon_fn))
         self.window.geometry(geom)
         self.close_callback = close_callback
         self.image_fn = image_fn

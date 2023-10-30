@@ -24,7 +24,7 @@ class LoginForm():
         if DEBUG: self.on_login()
 
     def conf_window(self, parent: Tk):
-        self.window = parent
+        self.window = Toplevel(parent)
         # TODO: self.window.iconphoto(False, load_icon('icon_login.png'))
         self.window.title('Login')
         self.window.geometry('800x400')
@@ -108,10 +108,10 @@ class LoginForm():
             user = self.on_auth(username, password)
             print(f'{__name__}: user {user.name} logged in, redirecting to agency home')
             self.redirect_win()
-            self.window.destroy()
         except Exception as ex:
             Error(self.window, ex)
-            self.window.destroy()
+        finally:
+            self.on_exit()
 
     def on_exit(self):
         print(f'{__name__}: exiting login')

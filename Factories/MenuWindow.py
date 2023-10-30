@@ -14,7 +14,7 @@ class MenuWindow():
                  close_callback: Callable, menu_items: dict, image_fn='',
                  icon_fn='', table_data=None, form_fields=None, 
                  disable_primary_action=False, close_on_submit=False,
-                 filters=None, error=None, geom=GEOM):
+                 filters=None, list_data=None, error=None, geom=GEOM):
         '''construct a new window for a menu page'''
 
         print(f'{__name__}: opened {title}')
@@ -53,7 +53,10 @@ class MenuWindow():
                 window_width=WINDOW_WIDTH,
                 table_data=table_data,
                 filters=filters
-            )
+            ).configure_rows_big()
+
+        if list_data is not None:
+            self.layout.add_list_view(list_data).configure_rows_list()
         
         self.layout.add_menu(menu_items, disable_primary_action)
 

@@ -26,9 +26,9 @@ class Utils:
 
         for s in countries:
             try:
-                agency.flights.flights.add_flight(Flight(airlines[random.randint(0, (len(airlines) - 1))], random.randint(
+                agency.flights.add_flight(Flight(airlines[random.randint(0, (len(airlines) - 1))], random.randint(
                     flight_min, flight_max), country, s, random.uniform(cost_min, cost_max)))
-                agency.flights.flights.add_flight(Flight(airlines[random.randint(0, (len(airlines) - 1))], random.randint(
+                agency.flights.add_flight(Flight(airlines[random.randint(0, (len(airlines) - 1))], random.randint(
                     flight_min, flight_max), s, country, random.uniform(cost_min, cost_max)))
             except:
                 continue

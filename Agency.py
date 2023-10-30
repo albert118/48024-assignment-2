@@ -43,5 +43,5 @@ class Agency:
     def get_destinations_dataframe(self) -> dict:
         return {
             'columns': ['Name', 'Country'],
-            'rows': [d.listify() for d in self.destinations.destinations]
+            'rows': self.trip.listify()
         }

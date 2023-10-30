@@ -66,11 +66,8 @@ class AgencyMenu():
             image_fn='trip.png',
             icon_fn='trip_icon.png',
             menu_items={
-                # redirects to the existing destination add/remove forms
-                # I assume the trip/destination photo should show on these windows too
-                'Add Destination': self.on_add_destination,
-                'Remove Destination': self.on_remove_destination,
-                # autogenerate the itinerary, this is then visible in 'View Trip'
+                'Add Destination': self.on_book_destination,
+                'Remove Destination': self.on_unbook_destination,
                 'Add Connecting Flights': self.on_add_connecting,
                 'View Trip': self.on_view_trip
             }
@@ -253,6 +250,57 @@ class AgencyMenu():
             geom="1600x800"
         )
 
+    def on_book_destination(self):
+        form_data = {
+            'Name': None,
+            'Country': None
+        }
+
+        def on_add():
+            try:
+                self.agency.trip.destinations.add_destination(Destination(
+                    form_data['Name'].get(),
+                    form_data['Country'].get()
+                ))
+            except Exception as ex:
+                Error(self.main.window, ex)
+
+        self.main.child_menu.open_sub_menu(
+            title='Add Destination',
+            menu_message='Add a Destination',
+            form_fields=form_data,
+            menu_items={ 'Add Destination': on_add },
+            disable_primary_action=True,
+            close_on_submit=True,
+            geom="1600x800"
+        )
+
+    def on_unbook_destination(self):
+        form_data = {
+            'Name': None,
+            'Country': None
+        }
+
+        def on_remove():
+            name = form_data['Name'].get()
+            country = form_data['Country'].get()
+            
+            try:
+                d = self.agency.trip.destinations.get_destination(name, country)
+                self.agency.trip.destinations.remove_destination(d)
+            except Exception as ex:
+                Error(self.main.window, ex)
+
+        self.main.child_menu.open_sub_menu(
+            title='Remove Destinations',
+            menu_message='Remove a Destination',
+            form_fields=form_data,
+            menu_items={ 'Remove Destination': on_remove },
+            disable_primary_action=True,
+            close_on_submit=True,
+            geom="1600x800"
+        )
+
     def on_add_connecting(self):
         try:
             self.agency.trip.add_connecting_flights()
@@ -260,16 +308,30 @@ class AgencyMenu():
             Error(self.main.window, ex)
 
     def on_view_trip(self):
-        # TODO: determine the value clicked on, use it to switch the redirect
-        # TODO: add a list-view (instead of the typical table view)
-        # TODO: add "Nothing Yet" default text when there is no trip in the list
+        def redirect(choice: str):
+            if choice == 'destination':
+                self.on_view_destinations()
+                return
+            elif choice == 'flight':
+                self.on_view_flights()
+                return
+            else:
+                Error(self.main.window, Exception('cannot navigate to both a flight and destination (choose one)'))
+                return
+            
+        itinery = []
+        try:
+            itinery = self.agency.trip.get_itinery()
+        except:
+            pass
+
         self.main.child_menu.open_sub_menu(
             title='Display Trip',
             menu_message='Your Trip',
             menu_items={
-                'View Individual': lambda menu_choice: print(f'go to {menu_choice}'),
+                'View Individual': lambda menu_choice: redirect(menu_choice),
             },
-            table_data={ 'columns': ['Itinery'], 'rows': self.agency.trip.get_itinery() }
+            list_data={ 'data': itinery, 'default': 'Nothing yet' }
         )
 
 ###########################

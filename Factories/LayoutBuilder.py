@@ -10,6 +10,7 @@ class LayoutBuilder:
         self._window = window
         self._row_ctr = 0
         self.primary_btn = None
+        self._table = None
         self.form_entries = []
 
         Styles.setup_styling()
@@ -22,6 +23,26 @@ class LayoutBuilder:
         self._window.rowconfigure(1, weight=1)
         self._window.rowconfigure(2, weight=2)
         self._window.rowconfigure(3, weight=1)
+
+    def configure_rows_big(self):
+        for i in range(self._row_ctr):
+            self._window.rowconfigure(i, weight=1)
+
+        # filter configured? Then different layout
+        if self._table is not None:
+            self._window.rowconfigure(6, weight=8) # the data-table row
+        else:
+            self._window.rowconfigure(4, weight=8) # the data-table row
+
+        return self
+    
+    def configure_rows_list(self):
+        for i in range(self._row_ctr):
+            self._window.rowconfigure(i, weight=1)
+
+        self._window.rowconfigure(4, weight=8)
+
+        return self
 
     def add_heading(self, menu_message: str):
         welcome_frame = Frame(self._window)
@@ -131,15 +152,18 @@ class LayoutBuilder:
         filter_frame = Frame(self._window)
         filter_frame.grid(row=self._row_ctr, column=0, columnspan=self._dimms[0])
 
+        # ensure the entire column width is consumed
+        for i in range(self._dimms[0]): filter_frame.columnconfigure(i, weight=1)
         # filter label and inputs are stacked vertically unlike normal forms
         for filter in filters:
             filter_label = Label(filter_frame, text=filter)
-            filter_label.grid(row=self._row_ctr, column=1, pady=5)
+            filter_label.grid(row=self._row_ctr, column=1, pady=2)
 
             self._row_ctr += 1
 
             field_entry = Entry(filter_frame)
-            field_entry.grid(row=self._row_ctr, column=1, sticky='e', pady=5)
+            # entry should be full-width
+            field_entry.grid(row=self._row_ctr, column=1, columnspan=self._dimms[0])
             field_entry.bind('<KeyRelease>', lambda x: filters[filter](field_entry.get(), self._table))
 
             self._row_ctr += 1
@@ -170,13 +194,7 @@ class LayoutBuilder:
             table.heading(column, text=column)
             table.column(column, width=(window_width // len(table_data['columns'])), anchor='center')
 
-        # rows should alternate, using tags alternate (I think lightgray and white are the example?)
-        table.tag_configure('oddrow', background='#f2f1f1')
-        table.tag_configure('evenrow', background='white')
-
-        for idx, row in enumerate(table_data['rows']):
-            tags = ('evenrow',) if idx % 2 == 0 else ('oddrow',)
-            table.insert('', 'end', values=row, tags=tags, iid=idx)
+        self.add_table_rows(table, table_data['rows'])
 
         # include a scrollbar as spec'd
         scrollbar = Scrollbar(table_frame, orient='vertical', command=table.yview)
@@ -186,6 +204,35 @@ class LayoutBuilder:
         table.config(yscrollcommand=scrollbar.set)
         table.pack(side='left', fill='both', expand=True)
         
+        return self
+    
+    def add_list_view(self, list_data: dict):
+        view_frame = Frame(self._window)
+        # sticky is required for a frame to stretch to rowspan
+        view_frame.grid(row=self._row_ctr, column=0, columnspan=self._dimms[0], sticky='ns')
+
+        self._row_ctr += 1
+
+        if list_data['data'] is None or len(list_data['data']) == 0:
+            no_data_label = Label(view_frame, text=list_data['default'])
+            no_data_label.grid(row=self._row_ctr, pady=(40, 20))
+        else:
+            table = Treeview(
+                view_frame,
+                columns=['list_view'],
+                show='tree'
+            )
+
+            self.add_table_rows(table, list_data['data'])
+
+            # include a scrollbar as spec'd
+            scrollbar = Scrollbar(view_frame, orient='vertical', command=table.yview)
+            scrollbar.pack(side='right', fill='y')
+
+            # finalise the table
+            table.config(yscrollcommand=scrollbar.set)
+            table.pack(side='left', fill='both', expand=True)
+
         return self
 
     def add_menu(self, menu_items: dict, disable_primary_action=False):
@@ -215,3 +262,13 @@ class LayoutBuilder:
         self._row_ctr += 1
         
         return self
+
+    def add_table_rows(self, table: Treeview, data: list):
+        # rows should alternate, using tags alternate (I think lightgray and white are the example?)
+        table.tag_configure('oddrow', background='#f2f1f1')
+        table.tag_configure('evenrow', background='white')
+
+        for idx, row in enumerate(data):
+            tags = ('evenrow',) if idx % 2 == 0 else ('oddrow',)
+            print(row)
+            table.insert('', 'end', values=row, tags=tags, iid=idx)

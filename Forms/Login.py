@@ -6,7 +6,7 @@ from Views import Error
 from Factories.AssetUtil import load_icon
 
 
-DEBUG = True # simplify login while testing
+DEBUG = False # simplify login while testing
 
 
 class LoginForm():

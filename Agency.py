@@ -1,6 +1,6 @@
 from tkinter import Tk
 
-DEBUG = True # simplify login while testing
+DEBUG = False # simplify login while testing
 
 class Agency:
     def __init__(self):

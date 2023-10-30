@@ -81,7 +81,7 @@ class MenuWindow():
             self.window,
             # display the same image on sub-menus as their parent
             image_fn=self.image_fn,
-            close_callback=lambda: print('closed sub-menu'),
+            close_callback=lambda: None,
             **kwargs
         ).window
 

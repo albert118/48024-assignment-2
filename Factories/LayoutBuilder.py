@@ -126,22 +126,44 @@ class LayoutBuilder:
 
         return True
 
-    def add_table_data(self, window_width: int, table_data=None):
-        if (table_data is None):
-            return self
+    def add_filter(self, filters: dict):
+        # add an input frame for the filter
+        filter_frame = Frame(self._window)
+        filter_frame.grid(row=self._row_ctr, column=0, columnspan=self._dimms[0])
+
+        # filter label and inputs are stacked vertically unlike normal forms
+        for filter in filters:
+            filter_label = Label(filter_frame, text=filter)
+            filter_label.grid(row=self._row_ctr, column=1, pady=5)
+
+            self._row_ctr += 1
+
+            field_entry = Entry(filter_frame)
+            field_entry.grid(row=self._row_ctr, column=1, sticky='e', pady=5)
+            field_entry.bind('<KeyRelease>', lambda x: filters[filter](field_entry.get(), self._table))
+
+            self._row_ctr += 1
+
+    def add_table_data(self, window_width: int, table_data=None, filters=None):
+        if table_data is None: return self
 
         table_frame = Frame(self._window)
-        # sticky is required for a frame to stretch to rowspan
-        table_frame.grid(row=self._row_ctr, column=0, columnspan=self._dimms[0], sticky='ns')
-
-        self._row_ctr += 1
-
         # utilise the Treeview to enable scrolling
         table = Treeview(
             table_frame,
             columns=table_data['columns'],
             show='headings'
         )
+
+        if filters is not None:
+            self.add_filter(filters)
+            # store a ref to table for filtering
+            self._table = table
+
+        # sticky is required for a frame to stretch to rowspan
+        table_frame.grid(row=self._row_ctr, column=0, columnspan=self._dimms[0], sticky='ns')
+
+        self._row_ctr += 1
 
         # add headings and data
         for column in table_data['columns']:

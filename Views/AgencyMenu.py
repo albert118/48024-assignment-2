@@ -90,13 +90,14 @@ class AgencyMenu():
         )
 
     def on_filter_flights(self):
-        form_data = { 'Country': None }
-        # TODO: add filter + callback to self.agency.get_filtered_flights
         self.main.child_menu.open_sub_menu(
             title='Display Flights Filtered',
             menu_message='Filtered Flights',
-            form_fields=form_data,
+            filters={ 
+                'Country': lambda *args: on_filter(self.agency.get_flight_dataframe()['rows'], *args)
+            },
             menu_items={},
+            table_data=self.agency.get_flight_dataframe(),
             geom=GEOM_TABLE_VIEW
         )
 
@@ -187,13 +188,14 @@ class AgencyMenu():
         )
 
     def on_filter_destinations(self):
-        form_data = { 'Country': None }
-        # TODO: add filter + callback to self.agency.get_filtered_flights
         self.main.child_menu.open_sub_menu(
             title='Display Destinations Filtered',
             menu_message='Filtered Flights',
-            form_fields=form_data,
+            filters={ 
+                'Country': lambda *args: on_filter(self.agency.get_destinations_dataframe()['rows'], *args)
+            },
             menu_items={},
+            table_data=self.agency.get_destinations_dataframe(),
             geom=GEOM_TABLE_VIEW
         )
 
@@ -269,3 +271,24 @@ class AgencyMenu():
             },
             table_data={ 'columns': ['Itinery'], 'rows': self.agency.trip.get_itinery() }
         )
+
+###########################
+# helpers
+###########################
+
+def on_filter(rows: list, value: str, table: Treeview):
+    # remove the old table
+    table.delete(*table.get_children())
+
+    if len(value.strip()) == 0:
+        rebuild_table(table, rows)
+
+    # and rebuild it from scratch - this is very brute force
+    # listified data is a tuple, second elem is 'Country'
+    filtered_rows = [r for r in rows if r[1].lower() == value.lower()]
+    rebuild_table(table, filtered_rows)
+
+def rebuild_table(table, rows):
+    for idx, row in enumerate(rows):
+        tags = ('evenrow',) if idx % 2 == 0 else ('oddrow',)
+        table.insert('', 'end', values=row, tags=tags, iid=idx)

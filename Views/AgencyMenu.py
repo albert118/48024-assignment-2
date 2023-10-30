@@ -91,7 +91,7 @@ class AgencyMenu():
             title='Display Flights Filtered',
             menu_message='Filtered Flights',
             filters={ 
-                'Country': lambda *args: on_filter(self.agency.get_flight_dataframe()['rows'], *args)
+                'Country': lambda *args: on_filter_flights(self.agency.get_flight_dataframe()['rows'], *args)
             },
             menu_items={},
             table_data=self.agency.get_flight_dataframe(),
@@ -189,7 +189,7 @@ class AgencyMenu():
             title='Display Destinations Filtered',
             menu_message='Filtered Flights',
             filters={ 
-                'Country': lambda *args: on_filter(self.agency.get_destinations_dataframe()['rows'], *args)
+                'Country': lambda *args: on_filter_destinations(self.agency.get_destinations_dataframe()['rows'], *args)
             },
             menu_items={},
             table_data=self.agency.get_destinations_dataframe(),
@@ -338,7 +338,7 @@ class AgencyMenu():
 # helpers
 ###########################
 
-def on_filter(rows: list, value: str, table: Treeview):
+def on_filter_destinations(rows: list, value: str, table: Treeview):
     # remove the old table
     table.delete(*table.get_children())
 
@@ -348,6 +348,18 @@ def on_filter(rows: list, value: str, table: Treeview):
     # and rebuild it from scratch - this is very brute force
     # listified data is a tuple, second elem is 'Country'
     filtered_rows = [r for r in rows if r[1].lower() == value.lower()]
+    rebuild_table(table, filtered_rows)
+
+def on_filter_flights(rows: list, value: str, table: Treeview):
+    # remove the old table
+    table.delete(*table.get_children())
+
+    if len(value.strip()) == 0:
+        rebuild_table(table, rows)
+
+    # and rebuild it from scratch - this is very brute force
+    # listified data is a tuple, third elem is 'takeoff country', fourth is 'landing country'
+    filtered_rows = [r for r in rows if r[2].lower() == value.lower() or r[3].lower() == value.lower()]
     rebuild_table(table, filtered_rows)
 
 def rebuild_table(table, rows):

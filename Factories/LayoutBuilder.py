@@ -20,6 +20,7 @@ class LayoutBuilder:
         self._row_ctr = 0
         self.primary_btn = None
         self._table = None
+        self.selected_row = None
         self.form_entries = []
 
         Styles.setup_styling()
@@ -42,14 +43,6 @@ class LayoutBuilder:
             self._window.rowconfigure(6, weight=8) # the data-table row
         else:
             self._window.rowconfigure(4, weight=8) # the data-table row
-
-        return self
-    
-    def configure_rows_list(self):
-        for i in range(self._row_ctr):
-            self._window.rowconfigure(i, weight=1)
-
-        self._window.rowconfigure(4, weight=8)
 
         return self
 
@@ -202,7 +195,6 @@ class LayoutBuilder:
             # store a ref to table for filtering
             self._table = table
 
-        # sticky is required for a frame to stretch to rowspan
         table_frame.grid(row=self._row_ctr, column=0, columnspan=self._dimms[0], sticky='ns')
 
         self._row_ctr += 1
@@ -210,24 +202,17 @@ class LayoutBuilder:
         # add headings and data
         for column in table_data['columns']:
             table.heading(column, text=column)
-            table.column(column, width=(window_width // len(table_data['columns'])), anchor='center')
+            table.column(column, width=(window_width // len(table_data['columns'])), anchor='w')
 
         self.add_table_rows(table, table_data['rows'])
-
-        # include a scrollbar as spec'd
-        scrollbar = Scrollbar(table_frame, orient='vertical', command=table.yview)
-        scrollbar.pack(side='right', fill='y')
-
-        # finalise the table
-        table.config(yscrollcommand=scrollbar.set)
+        self._add_scrollbar_to_table(table_frame, table)
         table.pack(side='left', fill='both', expand=True)
         
         return self
     
     def add_list_view(self, list_data: dict):
         view_frame = Frame(self._window)
-        # sticky is required for a frame to stretch to rowspan
-        view_frame.grid(row=self._row_ctr, column=0, columnspan=self._dimms[0], sticky='ns')
+        view_frame.grid(row=self._row_ctr, column=0, columnspan=self._dimms[0], sticky='nsew')
 
         self._row_ctr += 1
 
@@ -238,22 +223,22 @@ class LayoutBuilder:
             table = Treeview(
                 view_frame,
                 columns=['list_view'],
-                show='tree',
+                show='headings',
                 selectmode='browse',
                 height=10
             )
 
             self.add_table_rows(table, list_data['data'])
-
-            # include a scrollbar as spec'd
-            scrollbar = Scrollbar(view_frame, orient='vertical', command=table.yview)
-            scrollbar.pack(side='right', fill='y')
-
-            # finalise the table
-            table.config(yscrollcommand=scrollbar.set)
+            self._add_scrollbar_to_table(view_frame, table)
             table.pack(side='left', fill='both', expand=True)
 
         return self
+    
+    def _add_scrollbar_to_table(self, frame, table):
+        # include a scrollbar as spec'd
+        scrollbar = Scrollbar(frame, orient='vertical', command=table.yview)
+        scrollbar.pack(side='right', fill='y')
+        table.config(yscrollcommand=scrollbar.set)
 
     def add_menu(self, menu_items: dict, disable_primary_action=False):
         '''the first action (ie. leftmost) is considered the primary action'''
@@ -288,6 +273,16 @@ class LayoutBuilder:
         table.tag_configure('oddrow', background='#f2f1f1')
         table.tag_configure('evenrow', background='white')
 
+        table.tag_bind('evenrow', '<ButtonRelease-1>', self.on_row_select)
+        table.tag_bind('oddrow', '<ButtonRelease-1>', self.on_row_select)
+
         for idx, row in enumerate(data):
             tags = ('evenrow',) if idx % 2 == 0 else ('oddrow',)
-            table.insert('', 'end', values=row, tags=tags, iid=idx)
+            if type(row) is not list:
+                table.insert('', 'end', values=[row], tags=tags, iid=idx)
+            else:
+                table.insert('', 'end', values=row, tags=tags, iid=idx)
+
+    # store the data about the row being selected
+    def on_row_select(self, event, row_data):
+        self.selected_row = row_data

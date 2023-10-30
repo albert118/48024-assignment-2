@@ -19,10 +19,6 @@ def setup_styling():
     style.map('TButton', background=[('active', ACCENT_BLUE)])
 
     style.configure('TEntry', padding=6, font=("Arial", 11), background=GREY_BLUE)
-
-    # TODO: fix the TEntry style to show the border color when focussed (currently does not show)
-    style.map('TEntry', bordercolor=[('focus', ACCENT_BLUE)], relief=[('focus', 'solid')])
-
     style.configure('TLabel', foreground=LIGHT_BLUE, font=FONT_LABEL)
 
     style.configure('ExceptionType.TLabel', foreground='red', font=FONT_LABEL)

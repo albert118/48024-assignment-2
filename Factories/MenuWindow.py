@@ -56,7 +56,7 @@ class MenuWindow():
             ).configure_rows_big()
 
         if list_data is not None:
-            self.layout.add_list_view(list_data).configure_rows_list()
+            self.layout.add_list_view(list_data)
         
         self.layout.add_menu(menu_items, disable_primary_action)
 

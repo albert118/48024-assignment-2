@@ -7,7 +7,7 @@ from Views import Error
 from Factories.AssetUtil import load_icon
 
 
-DEBUG = False # simplify login while testing
+DEBUG = True # simplify login while testing
 
 # helpers
 

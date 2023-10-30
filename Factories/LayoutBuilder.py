@@ -1,8 +1,17 @@
 from tkinter import *
+import tkinter as tk
 from tkinter.ttk import *
 from Factories.AssetUtil import load_asset
 import Styles
 
+
+# helpers
+
+def on_entry_focus(event):
+    event.widget.config(highlightcolor='#168FC1')
+
+def on_entry_blur(event):
+    event.widget.config(highlightcolor='gray')
 
 class LayoutBuilder:
     def __init__(self, window: Tk, dimms: tuple):
@@ -122,9 +131,11 @@ class LayoutBuilder:
             
             # track the entry using the given dict
             # this lets me use it later in a callback to submit
-            field_entry = Entry(inputs_frame)
+            field_entry = tk.Entry(inputs_frame, highlightthickness=2)
             field_entry.grid(row=self._row_ctr, column=1, sticky='e', pady=5)
             field_entry.bind('<KeyRelease>', self._validate_all_exist)
+            field_entry.bind("<FocusIn>", on_entry_focus)
+            field_entry.bind("<FocusOut>", on_entry_blur)
             # these could be combined for efficiency
             # but I don't care to make this too re-usable
             form_fields[field] = field_entry
@@ -161,7 +172,12 @@ class LayoutBuilder:
 
             self._row_ctr += 1
 
-            field_entry = Entry(filter_frame)
+            field_entry = tk.Entry(filter_frame, highlightthickness=2)
+            field_entry.grid(row=self._row_ctr, column=1, sticky='e', pady=5)
+            field_entry.bind('<KeyRelease>', self._validate_all_exist)
+            field_entry.bind("<FocusIn>", on_entry_focus)
+            field_entry.bind("<FocusOut>", on_entry_blur)
+
             # entry should be full-width
             field_entry.grid(row=self._row_ctr, column=1, columnspan=self._dimms[0])
             field_entry.bind('<KeyRelease>', lambda x: filters[filter](field_entry.get(), self._table))

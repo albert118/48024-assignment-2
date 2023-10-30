@@ -1,4 +1,5 @@
 from tkinter import *
+import tkinter as tk
 from tkinter.ttk import *
 from typing import Callable
 import Styles
@@ -8,6 +9,13 @@ from Factories.AssetUtil import load_icon
 
 DEBUG = False # simplify login while testing
 
+# helpers
+
+def on_entry_focus(event):
+    event.widget.config(highlightcolor='#168FC1')
+
+def on_entry_blur(event):
+    event.widget.config(highlightcolor='gray')
 
 class LoginForm():
     def __init__(self, parent: Tk, redirect_win: Tk, on_auth: Callable):
@@ -53,9 +61,15 @@ class LoginForm():
     def add_inputs(self, inputs_frame: Frame):
         username_label = Label(inputs_frame, text="Username:")
         password_label = Label(inputs_frame, text="Password:")
-        self.username_entry = Entry(inputs_frame)
-        self.password_entry = Entry(inputs_frame, show="*")
 
+        self.username_entry = tk.Entry(inputs_frame, highlightthickness=2)
+        self.username_entry.bind("<FocusIn>", on_entry_focus)
+        self.username_entry.bind("<FocusOut>", on_entry_blur)
+
+        self.password_entry = tk.Entry(inputs_frame, show="*", highlightthickness=2)
+        self.password_entry.bind("<FocusIn>", on_entry_focus)
+        self.password_entry.bind("<FocusOut>", on_entry_blur)
+        
         # arrange the inputs and labels next to each other
         username_label.grid(row=2, column=0)
         self.username_entry.grid(row=2, column=1)

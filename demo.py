@@ -1,40 +1,46 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import messagebox
 
+def validate_login():
+    username = username_entry.get()
+    password = password_entry.get()
+    
+    # Validate the username and password (Add your validation logic here)
+    if username == "admin" and password == "password":
+        messagebox.showinfo("Login Successful", "Welcome, " + username + "!")
+    else:
+        messagebox.showerror("Login Failed", "Invalid username or password")
+
+# Create main window
 root = tk.Tk()
+root.title("Login Form")
 
-# Style Configuration
-style = ttk.Style()
-style.configure('Treeview', rowheight=30, font=('Arial', 10), padding=(10, 5))
-style.configure('Treeview.Row', borderwidth=1, relief='solid')  # Custom style for rows
+# Function to handle focus events and change border color to blue
+def on_entry_focus(event):
+    event.widget.config(highlightcolor="blue")
 
-# Custom styles for odd and even rows
-style.configure('Treeview.OddRow', background='lightgray')
-style.configure('Treeview.EvenRow', background='white')
+def on_entry_blur(event):
+    event.widget.config(highlightcolor="gray")
 
-# Treeview Widget
-columns = ('Column 1', 'Column 2', 'Column 3')
-tree = ttk.Treeview(root, columns=columns, show='headings')
-for col in columns:
-    tree.heading(col, text=col)
-    tree.column(col, width=150)  # Adjust the column width as needed
+# Username Label and Entry
+username_label = tk.Label(root, text="Username:")
+username_label.pack()
+username_entry = tk.Entry(root, highlightthickness=2)
+username_entry.pack()
+username_entry.bind("<FocusIn>", on_entry_focus)
+username_entry.bind("<FocusOut>", on_entry_blur)
 
-# Sample Data
-data = [('Row 1', 'Data A', 'Value 1'),
-        ('Row 2', 'Data B', 'Value 2'),
-        ('Row 3', 'Data C', 'Value 3')]
+# Password Label and Entry
+password_label = tk.Label(root, text="Password:")
+password_label.pack()
+password_entry = tk.Entry(root, show="*", highlightthickness=2)
+password_entry.pack()
+password_entry.bind("<FocusIn>", on_entry_focus)
+password_entry.bind("<FocusOut>", on_entry_blur)
 
-# Insert Data into Treeview with alternating row styles
-for idx, row in enumerate(data):
-    tags = ('Treeview.OddRow',) if idx % 2 == 1 else ('Treeview.EvenRow',)
-    tree.insert('', 'end', values=row, tags=tags + ('Treeview.Row',))
+# Login Button
+login_button = tk.Button(root, text="Login", command=validate_login)
+login_button.pack()
 
-# Scrollbar
-scrollbar = ttk.Scrollbar(root, orient='vertical', command=tree.yview)
-scrollbar.pack(side='right', fill='y')
-tree.config(yscrollcommand=scrollbar.set)
-
-# Pack Treeview
-tree.pack(side='left', fill='both', expand=True)
-
+# Run the main loop
 root.mainloop()

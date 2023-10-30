@@ -16,6 +16,8 @@ class MenuWindow():
                  disable_primary_action=False, close_on_submit=False, 
                  error=None, geom=GEOM):
         '''construct a new window for a menu page'''
+
+        print(f'{__name__}: opened {title}')
         
         self.conf_window(parent, title, close_callback, image_fn, icon_fn, geom)
 

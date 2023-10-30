@@ -177,7 +177,7 @@ class LayoutBuilder:
 
             self._row_ctr += 1
 
-    def add_table_data(self, window_width: int, table_data=None, filters=None):
+    def add_table_data(self, window_width: int, table_data=None, filters=None, navigate_kwargs={}):
         if table_data is None: return self
 
         table_frame = Frame(self._window)
@@ -189,11 +189,11 @@ class LayoutBuilder:
             selectmode='browse',
             height=10
         )
+        self._table = table
 
         if filters is not None:
             self.add_filter(filters)
             # store a ref to table for filtering
-            self._table = table
 
         table_frame.grid(row=self._row_ctr, column=0, columnspan=self._dimms[0], sticky='ns')
 
@@ -204,13 +204,13 @@ class LayoutBuilder:
             table.heading(column, text=column)
             table.column(column, width=(window_width // len(table_data['columns'])), anchor='w')
 
-        self.add_table_rows(table, table_data['rows'])
+        self.add_table_rows(table, table_data['rows'], navigate_kwargs)
         self._add_scrollbar_to_table(table_frame, table)
         table.pack(side='left', fill='both', expand=True)
         
         return self
     
-    def add_list_view(self, list_data: dict):
+    def add_list_view(self, list_data: dict, navigate_kwargs={}):
         view_frame = Frame(self._window)
         view_frame.grid(row=self._row_ctr, column=0, columnspan=self._dimms[0], sticky='nsew')
 
@@ -227,8 +227,9 @@ class LayoutBuilder:
                 selectmode='browse',
                 height=10
             )
+            self._table = table
 
-            self.add_table_rows(table, list_data['data'])
+            self.add_table_rows(table, list_data['data'], navigate_kwargs)
             self._add_scrollbar_to_table(view_frame, table)
             table.pack(side='left', fill='both', expand=True)
 
@@ -268,13 +269,14 @@ class LayoutBuilder:
         
         return self
 
-    def add_table_rows(self, table: Treeview, data: list):
+    def add_table_rows(self, table: Treeview, data: list, navigate_kwargs: dict):
         # rows should alternate, using tags alternate (I think lightgray and white are the example?)
         table.tag_configure('oddrow', background='#f2f1f1')
         table.tag_configure('evenrow', background='white')
 
-        table.tag_bind('evenrow', '<ButtonRelease-1>', self.on_row_select)
-        table.tag_bind('oddrow', '<ButtonRelease-1>', self.on_row_select)
+        # save the selected row index
+        table.tag_bind('oddrow', '<ButtonRelease-1>', lambda event: self.on_row_select(event, navigate_kwargs))
+        table.tag_bind('evenrow', '<ButtonRelease-1>', lambda event: self.on_row_select(event, navigate_kwargs))
 
         for idx, row in enumerate(data):
             tags = ('evenrow',) if idx % 2 == 0 else ('oddrow',)
@@ -283,6 +285,5 @@ class LayoutBuilder:
             else:
                 table.insert('', 'end', values=row, tags=tags, iid=idx)
 
-    # store the data about the row being selected
-    def on_row_select(self, event, row_data):
-        self.selected_row = row_data
+    def on_row_select(self, event, navigate_kwargs):
+        navigate_kwargs["selected_row"] = self._table.focus()

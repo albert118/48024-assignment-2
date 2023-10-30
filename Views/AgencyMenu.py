@@ -308,18 +308,23 @@ class AgencyMenu():
             Error(self.main.window, ex)
 
     def on_view_trip(self):
-        def redirect(choice: str):
-            if choice == 'destination':
+        navigate_kwargs = { 'selected_row': None }
+        itinery = []
+
+        def redirect():
+            row_idx = navigate_kwargs['selected_row']
+            obj = itinery[int(row_idx)]
+
+            if type(obj) is Destination:
                 self.on_view_destinations()
                 return
-            elif choice == 'flight':
+            elif type(obj) is Flight:
                 self.on_view_flights()
                 return
             else:
                 Error(self.main.window, Exception('cannot navigate to both a flight and destination (choose one)'))
                 return
-            
-        itinery = []
+        
         try:
             itinery = self.agency.trip.get_itinery()
         except:
@@ -329,8 +334,9 @@ class AgencyMenu():
             title='Display Trip',
             menu_message='Your Trip',
             menu_items={
-                'View Individual': lambda menu_choice: redirect(menu_choice),
+                'View Individual': lambda: redirect(),
             },
+            navigate_kwargs=navigate_kwargs,
             list_data={ 'data': itinery, 'default': 'Nothing yet' }
         )
 

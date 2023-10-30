@@ -24,7 +24,6 @@ class Agency:
         return self.logged_in_user is not None
 
     def on_auth(self, *args):
-
         if DEBUG:
             print(f'{__name__}: DEBUG mode! Will login as: "{self.admins.administrators[0].name}"')
             self.logged_in_user = self.admins.administrators[0]

@@ -110,17 +110,33 @@ class AgencyMenu():
         }
 
         def on_add():
+            f_no = None
+            
+            try:
+                f_no = int(form_data['Flight Number'].get())
+            except ValueError:
+                Error(self.main.window, Exception('cannot add flight, flight number invalid'))
+                return
+
+            f_cost = None
+            try:
+                f_cost = float(form_data['Cost'].get())
+            except ValueError:
+                Error(self.main.window, Exception('cannot add flight, cost invalid'))
+                return
+
             try:
                 self.agency.flights.add_flight(Flight(
                     # these are tkinter form fields, remember to call get()
                     form_data['Airline'].get(),
-                    form_data['Flight Number'].get(),
+                    f_no,
                     form_data['Takeoff'].get(),
                     form_data['Landing'].get(),
-                    form_data['Cost'].get()
+                    f_cost
                 ))
             except Exception as ex:
                 Error(self.main.window, ex)
+                return
 
         self.main.child_menu.open_sub_menu(
             title='Add Flight',

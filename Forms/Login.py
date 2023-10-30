@@ -3,6 +3,7 @@ from tkinter.ttk import *
 from typing import Callable
 import Styles
 from Views import Error
+from Factories.AssetUtil import load_icon
 
 
 DEBUG = True # simplify login while testing
@@ -25,7 +26,7 @@ class LoginForm():
 
     def conf_window(self, parent: Tk):
         self.window = Toplevel(parent)
-        # TODO: self.window.iconphoto(False, load_icon('icon_login.png'))
+        self.window.iconphoto(False, load_icon('login_icon.png'))
         self.window.title('Login')
         self.window.geometry('800x400')
         Styles.setup_styling()
@@ -107,11 +108,11 @@ class LoginForm():
         try:
             user = self.on_auth(username, password)
             print(f'{__name__}: user {user.name} logged in, redirecting to agency home')
+            self.on_exit()
             self.redirect_win()
         except Exception as ex:
             Error(self.window, ex)
-        finally:
-            self.on_exit()
+            self.window.destroy()
 
     def on_exit(self):
         print(f'{__name__}: exiting login')

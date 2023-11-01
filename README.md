@@ -21,6 +21,6 @@ Welcome to my solution to UTS assignment #2 48024 (Programming 2). A Python Tkin
 
 ## TODO
 
-- [ ] submit this repo as a `zip` to Canvas
+- [x] submit this repo as a `zip` to Canvas
 - [ ] submit source code to Ed
-- [ ] submit the assignment cover sheet
+- [x] submit the assignment cover sheet
